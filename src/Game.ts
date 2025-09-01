@@ -60,6 +60,27 @@ export class Game {
         }
         return moves;
       }
+
+      case "rook":
+      case "queen":
+      case "bishop": {
+        const validMoves = VALID_MOVES[piece];
+
+        for (const [x, y] of validMoves) {
+          let [posX, posY] = [currentX + x, currentY + y];
+
+          while (this.isValidMove(posX, posY)) {
+            const moveType = this.getMoveType(color, posX, posY);
+            if (moveType === "invalid") break;
+            moves.push({ position: [posX, posY], type: moveType });
+            if (moveType === "capture") break;
+
+            posX += x;
+            posY += y;
+          }
+        }
+        return moves;
+      }
     }
   }
 
