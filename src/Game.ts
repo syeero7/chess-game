@@ -25,13 +25,13 @@ export class Game {
   }
 
   getAvailableMoves(pos: PiecePosition) {
-    const square = this.board[pos[1]][pos[0]];
+    const [currentX, currentY] = pos;
+    const square = this.board[currentY][currentX];
     if (square === null) {
       throw new Error("Invalid piece position");
     }
 
     const [color, piece] = square.split("-") as [PieceColor, Piece];
-    const [currentX, currentY] = pos;
     const moves: PieceMove[] = [];
 
     switch (piece) {
@@ -78,6 +78,19 @@ export class Game {
             posX += x;
             posY += y;
           }
+        }
+        return moves;
+      }
+
+      case "knight": {
+        const validMoves = VALID_MOVES.knight;
+
+        for (const [x, y] of validMoves) {
+          const [posX, posY] = [currentX + x, currentY + y];
+          if (!this.isValidMove(posX, posY)) continue;
+          const moveType = this.getMoveType(color, posX, posY);
+          if (moveType === "invalid") continue;
+          moves.push({ position: [posX, posY], type: moveType });
         }
         return moves;
       }
