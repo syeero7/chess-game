@@ -6,6 +6,7 @@ import type {
   GameBoard,
   Piece,
   PieceMove,
+  PieceMoveType,
 } from "./types";
 import { VALID_MOVES } from "./valid-moves";
 
@@ -24,6 +25,30 @@ export class Game {
 
   private switchPlayerTurn() {
     this.activePlayer = this.activePlayer === "white" ? "black" : "white";
+  }
+
+  movePiece(
+    from: PiecePosition,
+    to: PiecePosition,
+    type: PieceMoveType,
+    promotion?: Exclude<Piece, "king" | "pawn">,
+  ) {
+    const [fromX, fromY] = from;
+    const [toX, toY] = to;
+    const fromSquare = this.board[fromY][fromX];
+    const toSquare = this.board[toY][toX];
+    if (!fromSquare || ((type === "all" || type === "capture") && !toSquare)) {
+      throw new Error("Invalid piece position");
+    }
+    const color = fromSquare.split("-")[0] as PieceColor;
+    if (fromSquare.endsWith("king")) {
+      this.kingPositions[color] = to;
+    }
+    this.board[toY][toX] = this.board[fromY][fromX];
+    this.board[fromY][fromX] = null;
+    if (fromSquare.endsWith("pawn") && type === "promotion" && promotion) {
+      this.board[toY][toX] = `${color}-${promotion}`;
+    }
   }
 
   getAvailableMoves(pos: PiecePosition) {
