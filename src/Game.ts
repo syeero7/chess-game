@@ -99,6 +99,23 @@ export class Game {
         }
         return moves;
       }
+
+      case "king": {
+        const validMoves = VALID_MOVES.king;
+
+        for (const [x, y] of validMoves) {
+          const [posX, posY] = [currentX + x, currentY + y];
+          if (!this.isValidMove(posX, posY)) continue;
+          const moveType = this.getMoveType(color, this.board[posY][posX]);
+          if (moveType === "invalid") continue;
+          if (this.isKingUnderAttack(pos, [posX, posY], color, [posX, posY])) {
+            continue;
+          }
+          moves.push({ position: [posX, posY], type: moveType });
+        }
+
+        return moves;
+      }
     }
   }
 
@@ -176,13 +193,14 @@ export class Game {
     from: PiecePosition,
     to: PiecePosition,
     color: PieceColor,
+    kingPosition = this.kingPositions[color],
   ) {
     const tmpBoard = structuredClone(this.board);
     const [fromX, fromY] = from;
     const [toX, toY] = to;
     tmpBoard[toY][toX] = tmpBoard[fromY][fromX];
     tmpBoard[fromY][fromX] = null;
-    return this.isUnderAttack(color, this.kingPositions[color], tmpBoard);
+    return this.isUnderAttack(color, kingPosition, tmpBoard);
   }
 
   private isValidMove(x: number, y: number) {
