@@ -30,6 +30,7 @@ describe("pawn moves generation", () => {
     gameBoard[3][2] = "white-pawn";
     gameBoard[4][1] = "black-pawn";
     gameBoard[4][3] = "black-pawn";
+
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves([2, 3]);
@@ -76,16 +77,42 @@ describe("pawn moves generation", () => {
 
   it('should generate available capture and promotion moves as "all" moves for pawn pieces', () => {
     const gameBoard = [...emptyBoard];
-    gameBoard[6][3] = "white-pawn";
+    gameBoard[6][2] = "white-pawn";
     gameBoard[0][6] = "white-knight";
-    gameBoard[1][5] = "black-pawn";
-    gameBoard[7][4] = "black-knight";
+    gameBoard[1][7] = "black-pawn";
+    gameBoard[7][1] = "black-knight";
     const game = new Game(gameBoard);
 
-    const white = game.getAvailableMoves([3, 6]);
-    expect(white).toContainEqual<PieceMove>({ position: [4, 7], type: "all" });
+    const white = game.getAvailableMoves([2, 6]);
+    expect(white).toContainEqual<PieceMove>({ position: [1, 7], type: "all" });
 
-    const black = game.getAvailableMoves([5, 1]);
+    const black = game.getAvailableMoves([7, 1]);
     expect(black).toContainEqual<PieceMove>({ position: [6, 0], type: "all" });
+  });
+
+  it("should not generate any moves that puts ally king under attack", () => {
+    const gameBoard = [...emptyBoard];
+    gameBoard[0][4] = "white-king";
+    gameBoard[3][0] = "white-bishop";
+    gameBoard[1][3] = "white-pawn";
+    gameBoard[5][4] = "white-pawn";
+    gameBoard[7][4] = "black-king";
+    gameBoard[4][0] = "black-bishop";
+    gameBoard[2][4] = "black-pawn";
+    gameBoard[5][2] = "black-pawn";
+    gameBoard[6][3] = "black-pawn";
+    const game = new Game(gameBoard);
+
+    const white = game.getAvailableMoves([3, 1]);
+    expect(white).not.toContainEqual<PieceMove>({
+      position: [4, 2],
+      type: "capture",
+    });
+
+    const black = game.getAvailableMoves([3, 6]);
+    expect(black).toContainEqual<PieceMove>({
+      position: [4, 5],
+      type: "capture",
+    });
   });
 });
