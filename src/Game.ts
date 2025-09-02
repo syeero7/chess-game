@@ -13,11 +13,13 @@ export class Game {
   private board: GameBoard;
   private status: GameStatus;
   private activePlayer: PieceColor;
+  private kingPositions: Record<PieceColor, PiecePosition>;
 
   constructor(gameBoard: GameBoard) {
     this.board = gameBoard;
     this.status = null;
     this.activePlayer = "white";
+    this.kingPositions = { white: [4, 0], black: [4, 7] };
   }
 
   private switchPlayerTurn() {
@@ -46,9 +48,10 @@ export class Game {
         for (const [x, y] of validMoves) {
           const [posX, posY] = [currentX + x, currentY + y];
           if (!this.isValidMove(posX, posY)) continue;
-          const moveType = this.getMoveType(color, posX, posY);
+          const moveType = this.getMoveType(color, this.board[posY][posX]);
           if (moveType === "invalid") continue;
           if (moveType === "move" && x !== 0) continue;
+          if (this.isKingUnderAttack(pos, [posX, posY], color)) continue;
 
           const move: Partial<PieceMove> = {};
           move.position = [posX, posY];
@@ -70,8 +73,9 @@ export class Game {
           let [posX, posY] = [currentX + x, currentY + y];
 
           while (this.isValidMove(posX, posY)) {
-            const moveType = this.getMoveType(color, posX, posY);
+            const moveType = this.getMoveType(color, this.board[posY][posX]);
             if (moveType === "invalid") break;
+            if (this.isKingUnderAttack(pos, [posX, posY], color)) break;
             moves.push({ position: [posX, posY], type: moveType });
             if (moveType === "capture") break;
 
@@ -88,8 +92,9 @@ export class Game {
         for (const [x, y] of validMoves) {
           const [posX, posY] = [currentX + x, currentY + y];
           if (!this.isValidMove(posX, posY)) continue;
-          const moveType = this.getMoveType(color, posX, posY);
+          const moveType = this.getMoveType(color, this.board[posY][posX]);
           if (moveType === "invalid") continue;
+          if (this.isKingUnderAttack(pos, [posX, posY], color)) continue;
           moves.push({ position: [posX, posY], type: moveType });
         }
         return moves;
@@ -105,12 +110,86 @@ export class Game {
     return this.status;
   }
 
+  private isUnderAttack(
+    color: PieceColor,
+    pos: PiecePosition,
+    board: GameBoard,
+  ) {
+    const [kingX, kingY] = pos;
+    const pawnMoves =
+      color === "white"
+        ? VALID_MOVES.pawn.slice(1)
+        : VALID_MOVES.pawn.slice(1).map((p) => [p[0], p[1] * -1]);
+    for (const [x, y] of pawnMoves) {
+      const [posX, posY] = [kingX + x, kingY + y];
+      if (!this.isValidMove(posX, posY)) continue;
+      const square = board[posY][posX];
+      const moveType = this.getMoveType(color, square);
+      if (moveType === "invalid" || square === null) continue;
+      if (moveType === "capture" && square.endsWith("pawn")) return true;
+    }
+
+    const kingMoves = VALID_MOVES.king;
+    for (const [x, y] of kingMoves) {
+      const [posX, posY] = [kingX + x, kingY + y];
+      if (!this.isValidMove(posX, posY)) continue;
+      const square = board[posY][posX];
+      const moveType = this.getMoveType(color, square);
+      if (moveType === "invalid" || square === null) continue;
+      if (moveType === "capture" && square.endsWith("king")) return true;
+    }
+
+    const knightMoves = VALID_MOVES.knight;
+    for (const [x, y] of knightMoves) {
+      const [posX, posY] = [kingX + x, kingY + y];
+      if (!this.isValidMove(posX, posY)) continue;
+      const square = board[posY][posX];
+      const moveType = this.getMoveType(color, square);
+      if (moveType === "invalid" || square === null) continue;
+      if (moveType === "capture" && square.endsWith("knight")) return true;
+    }
+
+    const queenMoves = VALID_MOVES.queen; // rook + bishop
+    for (const [x, y] of queenMoves) {
+      let [posX, posY] = [kingX + x, kingY + y];
+
+      while (this.isValidMove(posX, posY)) {
+        const square = board[posY][posX];
+        const moveType = this.getMoveType(color, square);
+        if (moveType === "invalid") break;
+        if (square && moveType === "capture") {
+          if (square.endsWith("queen")) return true;
+          if ((x === 0 || y === 0) && square.endsWith("rook")) return true;
+          if (x !== 0 && y !== 0 && square.endsWith("bishop")) return true;
+          break;
+        }
+
+        posX += x;
+        posY += y;
+      }
+    }
+
+    return false;
+  }
+
+  private isKingUnderAttack(
+    from: PiecePosition,
+    to: PiecePosition,
+    color: PieceColor,
+  ) {
+    const tmpBoard = structuredClone(this.board);
+    const [fromX, fromY] = from;
+    const [toX, toY] = to;
+    tmpBoard[toY][toX] = tmpBoard[fromY][fromX];
+    tmpBoard[fromY][fromX] = null;
+    return this.isUnderAttack(color, this.kingPositions[color], tmpBoard);
+  }
+
   private isValidMove(x: number, y: number) {
     return x >= 0 && y >= 0 && x < 8 && y < 8;
   }
 
-  private getMoveType(color: PieceColor, x: number, y: number) {
-    const square = this.board[y][x];
+  private getMoveType(color: PieceColor, square: ChessPiece | null) {
     if (square === null) return "move";
     if (square.startsWith(color)) return "invalid";
     return "capture";
