@@ -31,19 +31,28 @@ export class Game {
     type: PieceMove,
     promotion?: Exclude<Piece, "king" | "pawn">,
   ) {
+    this.status = null;
     const fromSquare = this.board.white.get(from) || this.board.black.get(from);
     const toSquare = this.board.white.get(to) || this.board.black.get(to);
     if (!fromSquare || ((type === "all" || type === "capture") && !toSquare)) {
       throw new Error("Invalid piece position");
     }
-    const color = this.activePlayer;
-    if (fromSquare === "king") this.kingPositions[color] = to;
-    this.board[color].set(to, this.board[color].get(from)!);
-    this.board[color].delete(from);
-    this.board[this.getOpponentColor(color)].delete(to);
-    if (fromSquare === "pawn" && type === "promotion" && promotion) {
-      this.board[color].set(to, promotion);
+
+    const player = this.activePlayer;
+    if (fromSquare === "king" && (type === "move" || type === "capture")) {
+      this.kingPositions[player] = to;
     }
+
+    this.board[player].set(to, this.board[player].get(from)!);
+    this.board[player].delete(from);
+    this.board[this.getOpponentColor(player)].delete(to);
+
+    if (fromSquare === "pawn" && type === "promotion" && promotion) {
+      this.board[player].set(to, promotion);
+    }
+
+    this.updateGameStatus(to);
+    this.switchPlayerTurn();
   }
 
   getAvailableMoves(position: PieceIndexString, color: PieceColor) {
@@ -68,6 +77,7 @@ export class Game {
           const moveType = this.getMoveType(color, this.board, square);
           if (moveType === "invalid") continue;
           if (moveType === "move" && x !== 0) continue;
+          if (moveType === "capture" && x === 0) continue;
           if (this.isKingUnderAttack(position, square, color)) continue;
           const promotion = this.isPawnPromotion(color, posY);
           let tmpMove: PieceMove = moveType;
@@ -140,6 +150,24 @@ export class Game {
   getGameStatus() {
     return this.status;
   }
+  private updateGameStatus(lastMove: PieceIndexString) {
+    const opponent = this.getOpponentColor(this.activePlayer);
+    const moves = this.getAvailableMoves(lastMove, this.activePlayer);
+    for (const move of moves.values()) {
+      if (move === "check") {
+        this.status = `${opponent}-check`;
+        break;
+      }
+    }
+
+    for (const square of this.board[opponent].keys()) {
+      const legalMoves = this.getAvailableMoves(square, opponent);
+      if (legalMoves.size > 0) return;
+    }
+
+    this.status =
+      this.status === `${opponent}-check` ? "checkmate" : "stalemate";
+  }
 
   private isUnderAttack(
     color: PieceColor,
@@ -190,7 +218,7 @@ export class Game {
         const moveType = this.getMoveType(color, board, square);
         if (moveType === "invalid") break;
         const piece = board[opponent].get(square);
-        if (piece && moveType === "capture") {
+        if (piece && (moveType === "capture" || moveType === "check")) {
           if (piece === "queen") return true;
           if ((x === 0 || y === 0) && piece === "rook") return true;
           if (x !== 0 && y !== 0 && piece === "bishop") return true;
@@ -229,7 +257,9 @@ export class Game {
     square: PieceIndexString,
   ) {
     if (board[color].has(square)) return "invalid";
-    if (board[this.getOpponentColor(color)].has(square)) return "capture";
+    const opponent = this.getOpponentColor(color);
+    if (board[opponent].get(square) === "king") return "check";
+    if (board[opponent].has(square)) return "capture";
     return "move";
   }
 
