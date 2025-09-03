@@ -5,7 +5,6 @@ import type {
   GameBoard,
   Piece,
   PieceMove,
-  PieceMoveType,
 } from "./types";
 import { VALID_MOVES } from "./valid-moves";
 
@@ -29,7 +28,7 @@ export class Game {
   movePiece(
     from: PieceIndexString,
     to: PieceIndexString,
-    type: PieceMoveType,
+    type: PieceMove,
     promotion?: Exclude<Piece, "king" | "pawn">,
   ) {
     const fromSquare = this.board.white.get(from) || this.board.black.get(from);
@@ -51,7 +50,7 @@ export class Game {
     const piece = this.board[color].get(position);
     if (piece == null) throw new Error("Invalid piece position");
     const [currentX, currentY] = position.split("").map((p) => Number(p));
-    const moves: PieceMove[] = [];
+    const moves = new Map<PieceIndexString, PieceMove>();
 
     switch (piece) {
       case "pawn": {
@@ -70,14 +69,11 @@ export class Game {
           if (moveType === "invalid") continue;
           if (moveType === "move" && x !== 0) continue;
           if (this.isKingUnderAttack(position, square, color)) continue;
-
-          const move: Partial<PieceMove> = {};
-          move.position = [posX, posY];
-          move.type = moveType;
           const promotion = this.isPawnPromotion(color, posY);
-          if (promotion && moveType === "capture") move.type = "all";
-          if (promotion && moveType === "move") move.type = "promotion";
-          moves.push(move as PieceMove);
+          let tmpMove: PieceMove = moveType;
+          if (promotion && moveType === "capture") tmpMove = "all";
+          if (promotion && moveType === "move") tmpMove = "promotion";
+          moves.set(square, tmpMove);
         }
         return moves;
       }
@@ -95,7 +91,7 @@ export class Game {
             const moveType = this.getMoveType(color, this.board, square);
             if (moveType === "invalid") break;
             if (this.isKingUnderAttack(position, square, color)) break;
-            moves.push({ position: [posX, posY], type: moveType });
+            moves.set(square, moveType);
             if (moveType === "capture") break;
 
             posX += x;
@@ -115,7 +111,7 @@ export class Game {
           const moveType = this.getMoveType(color, this.board, square);
           if (moveType === "invalid") continue;
           if (this.isKingUnderAttack(position, square, color)) continue;
-          moves.push({ position: [posX, posY], type: moveType });
+          moves.set(square, moveType);
         }
         return moves;
       }
@@ -130,7 +126,7 @@ export class Game {
           const moveType = this.getMoveType(color, this.board, square);
           if (moveType === "invalid") continue;
           if (this.isKingUnderAttack(position, square, color, square)) continue;
-          moves.push({ position: [posX, posY], type: moveType });
+          moves.set(square, moveType);
         }
         return moves;
       }
