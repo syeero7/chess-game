@@ -4,29 +4,18 @@ import { PieceMove, GameBoard } from "../src/types";
 
 describe("king moves generation", () => {
   it("should generate all available moves for king piece", () => {
-    const gameBoard: GameBoard = Array.from({ length: 8 }, () =>
-      new Array(8).fill(null),
-    );
-    gameBoard[2][3] = "white-pawn";
-    gameBoard[2][5] = "white-pawn";
-    gameBoard[3][3] = "black-king";
+    const gameBoard: GameBoard = { black: new Map(), white: new Map() };
+    gameBoard.white.set("32", "pawn");
+    gameBoard.white.set("52", "pawn");
+    gameBoard.black.set("33", "king");
     const game = new Game(gameBoard);
 
-    const moves = game.getAvailableMoves([3, 3]);
-    expect(moves).toContainEqual<PieceMove>({ position: [3, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({ position: [2, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({ position: [4, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({
-      position: [3, 2],
-      type: "capture",
-    });
-    expect(moves).not.toContainEqual<PieceMove>({
-      position: [2, 3],
-      type: "move",
-    });
-    expect(moves).not.toContainEqual<PieceMove>({
-      position: [4, 3],
-      type: "move",
-    });
+    const moves = game.getAvailableMoves("33", "black");
+    expect(moves.get("34")).toBe<PieceMove>("move");
+    expect(moves.get("24")).toBe<PieceMove>("move");
+    expect(moves.get("44")).toBe<PieceMove>("move");
+    expect(moves.get("32")).toBe<PieceMove>("capture");
+    expect(moves.get("23")).not.toBe<PieceMove>("move");
+    expect(moves.get("43")).not.toBe<PieceMove>("move");
   });
 });
