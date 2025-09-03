@@ -17,35 +17,17 @@ describe("rook moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("53", "white");
-    expect(white).toContainEqual<PieceMove>({ position: [5, 4], type: "move" });
-    expect(white).toContainEqual<PieceMove>({ position: [4, 3], type: "move" });
-    expect(white).toContainEqual<PieceMove>({ position: [7, 3], type: "move" });
-    expect(white).toContainEqual<PieceMove>({ position: [5, 2], type: "move" });
-    expect(white).toContainEqual<PieceMove>({
-      position: [5, 5],
-      type: "capture",
-    });
-    expect(white).not.toContainEqual<PieceMove>({
-      position: [5, 6],
-      type: "move",
-    });
-    expect(white).not.toContainEqual<PieceMove>({
-      position: [1, 3],
-      type: "move",
-    });
+    expect(white.get("54")).toBe<PieceMove>("move");
+    expect(white.get("43")).toBe<PieceMove>("move");
+    expect(white.get("73")).toBe<PieceMove>("move");
+    expect(white.get("52")).toBe<PieceMove>("move");
+    expect(white.get("55")).toBe<PieceMove>("capture");
+    expect(white.get("56")).not.toBe<PieceMove>("move");
+    expect(white.get("13")).not.toBe<PieceMove>("move");
 
     const black = game.getAvailableMoves("14", "black");
-    expect(black).not.toContainEqual<PieceMove>({
-      position: [6, 5],
-      type: "move",
-    });
-    expect(black).not.toContainEqual<PieceMove>({
-      position: [1, 1],
-      type: "move",
-    });
-    expect(black).not.toContainEqual<PieceMove>({
-      position: [1, 6],
-      type: "capture",
-    });
+    expect(black.get("65")).not.toBe<PieceMove>("move");
+    expect(black.get("11")).not.toBe<PieceMove>("move");
+    expect(black.get("16")).not.toBe<PieceMove>("capture");
   });
 });

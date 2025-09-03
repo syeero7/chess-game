@@ -12,12 +12,12 @@ describe("pawn moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("01", "white");
-    expect(white).toContainEqual<PieceMove>({ position: [0, 2], type: "move" });
-    expect(white).toContainEqual<PieceMove>({ position: [0, 3], type: "move" });
+    expect(white.get("02")).toBe<PieceMove>("move");
+    expect(white.get("03")).toBe<PieceMove>("move");
 
     const black = game.getAvailableMoves("26", "black");
-    expect(black).toContainEqual<PieceMove>({ position: [2, 5], type: "move" });
-    expect(black).toContainEqual<PieceMove>({ position: [2, 4], type: "move" });
+    expect(black.get("25")).toBe<PieceMove>("move");
+    expect(black.get("24")).toBe<PieceMove>("move");
   });
 
   it("should generate available capture moves for pawn pieces", () => {
@@ -29,26 +29,14 @@ describe("pawn moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("23", "white");
-    expect(white).toContainEqual<PieceMove>({ position: [2, 4], type: "move" });
-    expect(white).toContainEqual<PieceMove>({
-      position: [1, 4],
-      type: "capture",
-    });
-    expect(white).toContainEqual<PieceMove>({
-      position: [3, 4],
-      type: "capture",
-    });
+    expect(white.get("24")).toBe<PieceMove>("move");
+    expect(white.get("14")).toBe<PieceMove>("capture");
+    expect(white.get("34")).toBe<PieceMove>("capture");
 
     const black = game.getAvailableMoves("14", "black");
-    expect(black).toContainEqual<PieceMove>({ position: [1, 3], type: "move" });
-    expect(black).toContainEqual<PieceMove>({
-      position: [2, 3],
-      type: "capture",
-    });
-    expect(black).toContainEqual<PieceMove>({
-      position: [0, 3],
-      type: "capture",
-    });
+    expect(black.get("13")).toBe<PieceMove>("move");
+    expect(black.get("23")).toBe<PieceMove>("capture");
+    expect(black.get("03")).toBe<PieceMove>("capture");
   });
 
   it("should generate available promotion moves for pawn pieces", () => {
@@ -58,16 +46,10 @@ describe("pawn moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("26", "white");
-    expect(white).toContainEqual<PieceMove>({
-      position: [2, 7],
-      type: "promotion",
-    });
+    expect(white.get("27")).toBe<PieceMove>("promotion");
 
     const black = game.getAvailableMoves("01", "black");
-    expect(black).toContainEqual<PieceMove>({
-      position: [0, 0],
-      type: "promotion",
-    });
+    expect(black.get("00")).toBe<PieceMove>("promotion");
   });
 
   it('should generate available capture and promotion moves as "all" moves for pawn pieces', () => {
@@ -79,10 +61,10 @@ describe("pawn moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("26", "white");
-    expect(white).toContainEqual<PieceMove>({ position: [1, 7], type: "all" });
+    expect(white.get("17")).toBe<PieceMove>("all");
 
     const black = game.getAvailableMoves("71", "black");
-    expect(black).toContainEqual<PieceMove>({ position: [6, 0], type: "all" });
+    expect(black.get("60")).toBe<PieceMove>("all");
   });
 
   it("should not generate any moves that puts ally king under attack", () => {
@@ -99,15 +81,9 @@ describe("pawn moves generation", () => {
     const game = new Game(gameBoard);
 
     const white = game.getAvailableMoves("31", "white");
-    expect(white).not.toContainEqual<PieceMove>({
-      position: [4, 2],
-      type: "capture",
-    });
+    expect(white.get("42")).not.toBe<PieceMove>("capture");
 
     const black = game.getAvailableMoves("36", "black");
-    expect(black).toContainEqual<PieceMove>({
-      position: [4, 5],
-      type: "capture",
-    });
+    expect(black.get("45")).toBe<PieceMove>("capture");
   });
 });

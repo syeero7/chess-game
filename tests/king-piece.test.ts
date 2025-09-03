@@ -11,20 +11,11 @@ describe("king moves generation", () => {
     const game = new Game(gameBoard);
 
     const moves = game.getAvailableMoves("33", "black");
-    expect(moves).toContainEqual<PieceMove>({ position: [3, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({ position: [2, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({ position: [4, 4], type: "move" });
-    expect(moves).toContainEqual<PieceMove>({
-      position: [3, 2],
-      type: "capture",
-    });
-    expect(moves).not.toContainEqual<PieceMove>({
-      position: [2, 3],
-      type: "move",
-    });
-    expect(moves).not.toContainEqual<PieceMove>({
-      position: [4, 3],
-      type: "move",
-    });
+    expect(moves.get("34")).toBe<PieceMove>("move");
+    expect(moves.get("24")).toBe<PieceMove>("move");
+    expect(moves.get("44")).toBe<PieceMove>("move");
+    expect(moves.get("32")).toBe<PieceMove>("capture");
+    expect(moves.get("23")).not.toBe<PieceMove>("move");
+    expect(moves.get("43")).not.toBe<PieceMove>("move");
   });
 });
