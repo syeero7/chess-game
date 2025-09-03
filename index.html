@@ -10,8 +10,51 @@
     />
     <title>Chess</title>
   </head>
+
   <body>
-    <div id="app"></div>
+    <main data-open="false">
+      <header>
+        <button
+          aria-label="rotate game board"
+          data-action="rotate"
+          title="Rotate game board"
+        ></button>
+        <button
+          aria-label="abort game"
+          data-action="abort"
+          title="Abort game"
+        ></button>
+      </header>
+
+      <article class="game-board" data-game-board></article>
+    </main>
+
+    <div data-open="false" class="backdrop" data-backdrop>
+      <section
+        aria-label="pawn promotion options"
+        data-open="false"
+        data-pawn-promotion
+      >
+        <button aria-label="queen" title="Queen"></button>
+        <button aria-label="knight" title="Knight"></button>
+        <button aria-label="rook" title="Rook"></button>
+        <button aria-label="bishop" title="Bishop"></button>
+      </section>
+
+      <section data-open="false" data-game-over>
+        <p></p>
+        <button aria-label="restart" title="restart"></button>
+      </section>
+
+      <section data-open="false" data-game-start>
+        <img src="" alt="" />
+        <button data-choice="player" title="Player vs Player">P vs P</button>
+        <button data-choice="computer" title="Player vs Computer" disabled>
+          P vs AI
+        </button>
+      </section>
+    </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
