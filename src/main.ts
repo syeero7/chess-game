@@ -9,14 +9,15 @@ import type {
 } from "./types";
 import { Controller } from "./Controller";
 
-const main = document.querySelector<HTMLElement>("main");
-const header = document.querySelector<HTMLElement>("main > header");
+const main = document.querySelector("main");
+const header = main?.querySelector("header");
+const turnHeader = header?.querySelector("h1");
 const gameBoard = document.querySelector<HTMLElement>("[data-game-board]");
 const overScreen = document.querySelector<HTMLElement>("[data-game-over]");
 const startScreen = document.querySelector<HTMLElement>("[data-game-start]");
 const pawnPromo = document.querySelector<HTMLElement>("[data-pawn-promotion]");
 const backdrop = document.querySelector<HTMLElement>("[data-backdrop]");
-const overParagraph = overScreen?.querySelector("p");
+const overHeader = overScreen?.querySelector("h1");
 const restartBtn = overScreen?.querySelector("button");
 
 if (
@@ -27,7 +28,8 @@ if (
   !startScreen ||
   !pawnPromo ||
   !backdrop ||
-  !overParagraph ||
+  !turnHeader ||
+  !overHeader ||
   !restartBtn
 ) {
   throw new Error(
@@ -37,9 +39,10 @@ if (
       gameBoard,
       overScreen,
       startScreen,
+      turnHeader,
       pawnPromo,
       backdrop,
-      overParagraph,
+      overHeader,
       restartBtn,
     }),
   );
@@ -102,7 +105,7 @@ gameBoard.addEventListener("click", (e) => {
   controller.selectedBy = null;
   const status = game.getGameStatus();
   if (status === "checkmate" || status === "stalemate") {
-    overParagraph.textContent = status;
+    overHeader.textContent = status;
     backdrop.dataset.open = "true";
     overScreen.dataset.open = "true";
     return;
@@ -125,7 +128,7 @@ header.addEventListener("click", (e) => {
       controller.abortGame();
       backdrop.dataset.open = "true";
       overScreen.dataset.open = "true";
-      overParagraph.textContent = "Aborted";
+      overHeader.textContent = "Aborted";
       break;
     }
   }
@@ -178,6 +181,9 @@ function renderGameBoard(moves?: PieceMovesMap) {
   const board = game.getGameBoard();
   const status = game.getGameStatus();
   const fragment = document.createDocumentFragment();
+  const active = game.getActivePlayer();
+  turnHeader!.textContent = `${chessSymbols[`${active}-knight`]} ${active}'s turn`;
+
   const boardSize = 8;
   for (let row = 0; row < boardSize; row++) {
     for (let col = 0; col < boardSize; col++) {
