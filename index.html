@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/black-knight.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -14,22 +14,14 @@
   <body>
     <main data-open="false">
       <header>
-        <button
-          aria-label="rotate game board"
-          data-action="rotate"
-          title="Rotate game board"
-        ></button>
-        <button
-          aria-label="abort game"
-          data-action="abort"
-          title="Abort game"
-        ></button>
+        <button data-action="rotate">Rotate chessboard</button>
+        <button data-action="abort">Abort game</button>
       </header>
 
-      <article class="game-board" data-game-board></article>
+      <article class="game-board rotate" data-game-board></article>
     </main>
 
-    <div data-open="false" class="backdrop" data-backdrop>
+    <div data-open="true" class="backdrop" data-backdrop>
       <section
         aria-label="pawn promotion options"
         data-open="false"
@@ -43,11 +35,17 @@
 
       <section data-open="false" data-game-over>
         <p></p>
-        <button aria-label="restart" title="restart"></button>
+        <button>Restart</button>
       </section>
 
-      <section data-open="false" data-game-start>
-        <img src="" alt="" />
+      <section class="start-screen" data-open="true" data-game-start>
+        <img
+          src="/black-knight.svg"
+          alt="back knight"
+          width="200"
+          height="200"
+        />
+        <h1>CHESS</h1>
         <button data-choice="player" title="Player vs Player">P vs P</button>
         <button data-choice="computer" title="Player vs Computer" disabled>
           P vs AI

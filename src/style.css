@@ -5,12 +5,17 @@
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: system-ui, Arial, sans-serif;
+  line-height: 1;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary: hsl(198.6 88.7% 48.4%);
+  --secondary: hsl(240 5.2% 38.5%);
+  --background: hsl(0 0% 98%);
+  --text: hsl(240 10% 3.9%);
 }
 
 body {
@@ -19,20 +24,105 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  color: var(--text);
 }
 
 button {
-  border-radius: 2px;
   border: 1px solid transparent;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
+  color: var(--text);
+  background-color: var(--background);
 }
-button:hover {
-}
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+main {
+  width: 100%;
+  max-width: 600px;
+  margin-inline: auto;
+  padding-inline: 0.5em;
+}
+
+.game-board {
+  display: grid;
+  min-width: 300px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  aspect-ratio: 1/1;
+  transform-origin: center;
+  transition: transform 0.25s;
+  background-color: var(--background);
+
+  button {
+    font-size: clamp(1em, 2.8vh + 1em, 2.5em);
+    transform-origin: center;
+    display: inline-flex;
+    line-height: 2;
+    justify-content: center;
+    align-items: center;
+
+    &.black {
+      background-color: var(--secondary);
+    }
+  }
+
+  &.rotate {
+    --rotation: 180deg;
+
+    transform: rotate(var(--rotation));
+
+    button {
+      transform: rotate(var(--rotation));
+    }
+  }
+}
+
+.backdrop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  inset: 0;
+}
+
+.start-screen {
+  display: grid;
+  gap: 1em;
+
+  h1 {
+    font-size: 3em;
+    text-align: center;
+    padding-bottom: 0.25em;
+  }
+
+  button {
+    padding: 0.6em 1.2em;
+    border-radius: 6px;
+    transition: filter 0.25s;
+    border-width: 2px;
+    border-color: var(--secondary);
+    word-spacing: 1.5ch;
+
+    &:hover,
+    &:focus-visible {
+      filter: drop-shadow(0 0 0.5em var(--secondary));
+    }
+  }
+}
+
+*:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+[data-open="false"] {
+  display: none;
 }
