@@ -14,6 +14,8 @@ const overScreen = document.querySelector<HTMLElement>("[data-game-over]");
 const startScreen = document.querySelector<HTMLElement>("[data-game-start]");
 const pawnPromo = document.querySelector<HTMLElement>("[data-pawn-promotion]");
 const backdrop = document.querySelector<HTMLElement>("[data-backdrop]");
+const overParagraph = overScreen?.querySelector("p");
+const restartBtn = overScreen?.querySelector("button");
 
 if (
   !main ||
@@ -22,7 +24,9 @@ if (
   !overScreen ||
   !startScreen ||
   !pawnPromo ||
-  !backdrop
+  !backdrop ||
+  !overParagraph ||
+  !restartBtn
 ) {
   throw new Error(
     JSON.stringify({
@@ -33,6 +37,8 @@ if (
       startScreen,
       pawnPromo,
       backdrop,
+      overParagraph,
+      restartBtn,
     }),
   );
 }
@@ -44,9 +50,33 @@ gameBoard.addEventListener("click", (e) => {
   const { squareId } = e.target.dataset;
 });
 
-header.addEventListener("click", (e) => {});
+header.addEventListener("click", (e) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  const { action } = e.target.dataset;
+
+  switch (action) {
+    case "rotate": {
+      gameBoard.classList.toggle("rotate");
+      break;
+    }
+    case "abort": {
+      controller.abortGame();
+      backdrop.dataset.open = "true";
+      overScreen.dataset.open = "true";
+      overParagraph.textContent = "Aborted";
+      break;
+    }
+  }
+});
 
 pawnPromo.addEventListener("click", (e) => {});
+
+restartBtn.addEventListener("click", (e) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  main.dataset.open = "false";
+  overScreen.dataset.open = "false";
+  startScreen.dataset.open = "true";
+});
 
 startScreen.addEventListener("click", (e) => {
   if (!(e.target instanceof HTMLElement)) return;
