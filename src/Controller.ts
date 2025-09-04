@@ -1,4 +1,5 @@
 import type {
+  ChessPiece,
   GameBoard,
   Piece,
   PieceColor,
@@ -9,9 +10,13 @@ import { Game } from "./Game";
 
 export class Controller {
   private game: Game | null;
+  selectedSquare: PieceIndexString | null;
+  selectedBy: ChessPiece | null;
 
   constructor() {
     this.game = null;
+    this.selectedSquare = null;
+    this.selectedBy = null;
   }
 
   getGame() {

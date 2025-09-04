@@ -1,8 +1,10 @@
 import "./style.css";
 import type {
   ChessPiece,
+  Piece,
   PieceColor,
   PieceIndexString,
+  PieceMove,
   PieceMovesMap,
 } from "./types";
 import { Controller } from "./Controller";
@@ -43,11 +45,60 @@ if (
   );
 }
 
+const chessSymbols: Record<ChessPiece, string> = {
+  "white-king": "♔",
+  "white-queen": "♕",
+  "white-bishop": "♗",
+  "white-knight": "♘",
+  "white-rook": "♖",
+  "white-pawn": "♙",
+  "black-king": "♚",
+  "black-queen": "♛",
+  "black-bishop": "♝",
+  "black-knight": "♞",
+  "black-rook": "♜",
+  "black-pawn": "♟",
+};
+
 const controller = new Controller();
 
 gameBoard.addEventListener("click", (e) => {
   if (!(e.target instanceof HTMLElement)) return;
-  const { squareId } = e.target.dataset;
+  if (e.target.tagName !== "BUTTON") return;
+  const squareId = e.target.dataset.squareId as PieceIndexString | undefined;
+  const moveType = e.target.dataset.moveType as PieceMove | undefined;
+  const { title } = e.target;
+  const game = controller.getGame();
+  if (!game || !squareId || (!moveType && !title)) return;
+  const [color, piece] = title.toLowerCase().split(" ") as [PieceColor, Piece];
+  if (!moveType && game.getActivePlayer() !== color) return;
+
+  if (!moveType) {
+    clearGameBoard();
+    controller.selectedSquare = squareId;
+    controller.selectedBy = `${color}-${piece}`;
+    const moves = game.getAvailableMoves(squareId, color);
+    renderGameBoard(moves);
+    return;
+  }
+
+  const { selectedSquare, selectedBy } = controller;
+  if (!selectedSquare || !selectedBy) return;
+
+  if (moveType === "promotion" || moveType === "all") {
+    const buttons = pawnPromo.querySelectorAll("button");
+    const pieceColor = selectedBy.split("-")[0] as PieceColor;
+    buttons.forEach((btn) => {
+      btn.textContent = chessSymbols[`${pieceColor}-${btn.ariaLabel as Piece}`];
+      btn.dataset.squareId = squareId;
+    });
+    backdrop.dataset.open = "true";
+    pawnPromo.dataset.open = "true";
+    return;
+  }
+
+  game.movePiece(selectedSquare, squareId, moveType);
+  controller.selectedSquare = null;
 });
 
 header.addEventListener("click", (e) => {
@@ -69,7 +120,22 @@ header.addEventListener("click", (e) => {
   }
 });
 
-pawnPromo.addEventListener("click", (e) => {});
+pawnPromo.addEventListener("click", (e) => {
+  if (!(e.target instanceof HTMLElement)) return;
+  if (e.target.tagName !== "BUTTON") return;
+  const squareId = e.target.dataset.squareId as PieceIndexString | undefined;
+  const piece = e.target.ariaLabel as Exclude<Piece, "king" | "pawn"> | null;
+  if (!squareId || !piece) throw new Error(JSON.stringify({ squareId, piece }));
+  const { selectedBy, selectedSquare } = controller;
+  const game = controller.getGame();
+  if (!game || !selectedSquare || !selectedBy?.endsWith("pawn")) return;
+
+  game.movePiece(selectedSquare, squareId, "promotion", piece);
+  backdrop.dataset.open = "false";
+  pawnPromo.dataset.open = "false";
+  clearGameBoard();
+  renderGameBoard();
+});
 
 restartBtn.addEventListener("click", (e) => {
   if (!(e.target instanceof HTMLElement)) return;
@@ -94,21 +160,6 @@ startScreen.addEventListener("click", (e) => {
     }
   }
 });
-
-const chessSymbols: Record<ChessPiece, string> = {
-  "white-king": "♔",
-  "white-queen": "♕",
-  "white-bishop": "♗",
-  "white-knight": "♘",
-  "white-rook": "♖",
-  "white-pawn": "♙",
-  "black-king": "♚",
-  "black-queen": "♛",
-  "black-bishop": "♝",
-  "black-knight": "♞",
-  "black-rook": "♜",
-  "black-pawn": "♟",
-};
 
 function renderGameBoard(moves?: PieceMovesMap) {
   const game = controller.getGame();

@@ -26,6 +26,10 @@ export class Game {
     this.activePlayer = this.activePlayer === "white" ? "black" : "white";
   }
 
+  getActivePlayer() {
+    return this.activePlayer;
+  }
+
   movePiece(
     from: PieceIndexString,
     to: PieceIndexString,
