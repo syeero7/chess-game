@@ -83,7 +83,7 @@ gameBoard.addEventListener("click", (e) => {
   }
 
   const { selectedSquare, selectedBy } = controller;
-  if (!selectedSquare || !selectedBy) return;
+  if (!selectedSquare || !selectedBy || selectedSquare === squareId) return;
 
   if (moveType === "promotion" || moveType === "all") {
     const buttons = pawnPromo.querySelectorAll("button");
@@ -99,6 +99,17 @@ gameBoard.addEventListener("click", (e) => {
 
   game.movePiece(selectedSquare, squareId, moveType);
   controller.selectedSquare = null;
+  controller.selectedBy = null;
+  const status = game.getGameStatus();
+  if (status === "checkmate" || status === "stalemate") {
+    overParagraph.textContent = status;
+    backdrop.dataset.open = "true";
+    overScreen.dataset.open = "true";
+    return;
+  }
+
+  clearGameBoard();
+  renderGameBoard();
 });
 
 header.addEventListener("click", (e) => {
