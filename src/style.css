@@ -60,13 +60,21 @@ main {
   padding-inline: 0.5em;
 
   header {
-    display: flex;
-    margin-bottom: 2.5em;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-    padding-inline: 0.4em;
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      padding-inline: 0.4em;
+    }
+
+    h1 {
+      font-size: 2em;
+      text-align: center;
+      margin-block: 0.6em;
+      text-transform: capitalize;
+    }
 
     button {
       padding: 0.6em 1.2em;
@@ -214,7 +222,7 @@ main {
   flex-direction: column;
   gap: 2em;
 
-  p {
+  h1 {
     font-size: 2em;
     font-weight: 600;
   }

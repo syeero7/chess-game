@@ -14,8 +14,11 @@
   <body>
     <main data-open="false">
       <header>
-        <button data-action="rotate">Rotate chessboard</button>
-        <button data-action="abort">Abort game</button>
+        <div>
+          <button data-action="rotate">Rotate chessboard</button>
+          <button data-action="abort">Abort game</button>
+        </div>
+        <h1></h1>
       </header>
 
       <article class="game-board rotate" data-game-board></article>
@@ -28,7 +31,7 @@
         data-pawn-promotion
         class="backdrop-content"
       >
-        <p>Select promotion piece</p>
+        <h1>Select promotion piece</h1>
         <div class="promotion-pieces">
           <button aria-label="queen" title="Queen"></button>
           <button aria-label="knight" title="Knight" class="black"></button>
@@ -42,7 +45,7 @@
         data-open="false"
         data-game-over
       >
-        <p></p>
+        <h1></h1>
         <button>Restart</button>
       </section>
 
