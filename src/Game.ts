@@ -5,6 +5,7 @@ import type {
   GameBoard,
   Piece,
   PieceMove,
+  PieceMovesMap,
 } from "./types";
 import { VALID_MOVES } from "./valid-moves";
 
@@ -59,7 +60,7 @@ export class Game {
     const piece = this.board[color].get(position);
     if (piece == null) throw new Error("Invalid piece position");
     const [currentX, currentY] = position.split("").map((p) => Number(p));
-    const moves = new Map<PieceIndexString, PieceMove>();
+    const moves: PieceMovesMap = new Map();
 
     switch (piece) {
       case "pawn": {
@@ -150,6 +151,7 @@ export class Game {
   getGameStatus() {
     return this.status;
   }
+
   private updateGameStatus(lastMove: PieceIndexString) {
     const opponent = this.getOpponentColor(this.activePlayer);
     const moves = this.getAvailableMoves(lastMove, this.activePlayer);
