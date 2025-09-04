@@ -26,14 +26,22 @@
         aria-label="pawn promotion options"
         data-open="false"
         data-pawn-promotion
+        class="backdrop-content"
       >
-        <button aria-label="queen" title="Queen"></button>
-        <button aria-label="knight" title="Knight"></button>
-        <button aria-label="rook" title="Rook"></button>
-        <button aria-label="bishop" title="Bishop"></button>
+        <p>Select promotion piece</p>
+        <div class="promotion-pieces">
+          <button aria-label="queen" title="Queen"></button>
+          <button aria-label="knight" title="Knight" class="black"></button>
+          <button aria-label="rook" title="Rook" class="black"></button>
+          <button aria-label="bishop" title="Bishop"></button>
+        </div>
       </section>
 
-      <section class="over-screen" data-open="false" data-game-over>
+      <section
+        class="over-screen backdrop-content"
+        data-open="false"
+        data-game-over
+      >
         <p></p>
         <button>Restart</button>
       </section>
