@@ -10,6 +10,7 @@ import { Game } from "./Game";
 
 export class Controller {
   private game: Game | null;
+  computer: boolean;
   selectedSquare: PieceIndexString | null;
   selectedBy: ChessPiece | null;
 
@@ -17,6 +18,7 @@ export class Controller {
     this.game = null;
     this.selectedSquare = null;
     this.selectedBy = null;
+    this.computer = false;
   }
 
   getGame() {
@@ -30,6 +32,43 @@ export class Controller {
   startNewGame() {
     const gameBoard = this.createNewGameBoard();
     this.game = new Game(gameBoard);
+  }
+
+  computerMove(game: Game) {
+    const board = game.getGameBoard();
+    const computer = game.getActivePlayer();
+    const pieces = board[computer];
+    const normalMoves = [];
+
+    for (const fromSquare of pieces.keys()) {
+      const moves = game.getAvailableMoves(fromSquare, computer);
+      if (!moves.size) continue;
+
+      for (const [toSquare, moveType] of moves.entries()) {
+        switch (moveType) {
+          case "move": {
+            normalMoves.push({ fromSquare, toSquare, moveType });
+            continue;
+          }
+
+          case "all":
+          case "promotion": {
+            game.movePiece(fromSquare, toSquare, moveType, "queen");
+            return;
+          }
+
+          case "capture":
+          case "check": {
+            game.movePiece(fromSquare, toSquare, moveType);
+            return;
+          }
+        }
+      }
+    }
+
+    const randomIndex = Math.floor(Math.random() * normalMoves.length);
+    const { fromSquare, toSquare, moveType } = normalMoves[randomIndex];
+    game.movePiece(fromSquare, toSquare, moveType);
   }
 
   private createNewGameBoard() {

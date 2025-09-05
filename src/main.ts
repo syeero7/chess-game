@@ -113,6 +113,7 @@ gameBoard.addEventListener("click", (e) => {
 
   clearGameBoard();
   renderGameBoard();
+  playComputerMove();
 });
 
 header.addEventListener("click", (e) => {
@@ -147,8 +148,18 @@ pawnPromo.addEventListener("click", (e) => {
   game.movePiece(selectedSquare, squareId, "promotion", piece);
   backdrop.dataset.open = "false";
   pawnPromo.dataset.open = "false";
+
+  const status = game.getGameStatus();
+  if (status === "checkmate" || status === "stalemate") {
+    overHeader.textContent = status;
+    backdrop.dataset.open = "true";
+    overScreen.dataset.open = "true";
+    return;
+  }
+
   clearGameBoard();
   renderGameBoard();
+  playComputerMove();
 });
 
 restartBtn.addEventListener("click", (e) => {
@@ -162,17 +173,13 @@ startScreen.addEventListener("click", (e) => {
   if (!(e.target instanceof HTMLElement)) return;
   const { choice } = e.target.dataset;
   if (choice == null) return;
-
-  switch (choice) {
-    case "player": {
-      controller.startNewGame();
-      startScreen.dataset.open = "false";
-      backdrop.dataset.open = "false";
-      main.dataset.open = "true";
-      clearGameBoard();
-      renderGameBoard();
-    }
-  }
+  controller.computer = choice === "computer";
+  controller.startNewGame();
+  startScreen.dataset.open = "false";
+  backdrop.dataset.open = "false";
+  main.dataset.open = "true";
+  clearGameBoard();
+  renderGameBoard();
 });
 
 function renderGameBoard(moves?: PieceMovesMap) {
@@ -226,4 +233,24 @@ function clearGameBoard() {
   while (gameBoard?.firstChild) {
     gameBoard.firstChild.remove();
   }
+}
+
+function playComputerMove() {
+  if (!controller.computer) return;
+  const game = controller.getGame();
+  if (!game || !overHeader || !backdrop || !overScreen) return;
+
+  controller.computerMove(game);
+  const status = game.getGameStatus();
+  if (status === "checkmate" || status === "stalemate") {
+    overHeader.textContent = status;
+    backdrop.dataset.open = "true";
+    overScreen.dataset.open = "true";
+    return;
+  }
+
+  setTimeout(() => {
+    clearGameBoard();
+    renderGameBoard();
+  }, 500);
 }
