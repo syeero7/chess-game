@@ -12,9 +12,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --move: hsl(198.6 88.7% 48.4%);
+  --move: hsl(198.4 93.2% 59.6%);
   --capture: hsl(0 84.2% 60.2%);
-  --promotion: hsl(45.4 93.4% 47.5%);
+  --promotion: hsl(43.3 96.4% 56.3%);
   --secondary: hsl(240 5.2% 38.5%);
   --background: hsl(0 0% 98%);
   --text: hsl(240 10% 3.9%);
@@ -72,7 +72,7 @@ main {
     h1 {
       font-size: 2em;
       text-align: center;
-      margin-block: 0.6em;
+      margin-block: 0.8em 0.6em;
       text-transform: capitalize;
     }
 
@@ -112,6 +112,7 @@ main {
     transform-origin: center;
     display: inline-flex;
     line-height: 2;
+    border-width: 1.5px;
     justify-content: center;
     align-items: center;
     position: relative;
@@ -122,21 +123,17 @@ main {
 
     --square-shadow: var(--move);
 
-    &[data-move-type]::after {
-      isolation: isolate;
-      content: "";
-      position: absolute;
-      inset: 5px;
-      z-index: 1;
-      box-shadow: 0 0 0 6px var(--square-shadow);
+    &[data-move-type] {
+      box-shadow: inset 0 0 32px var(--square-shadow);
+      border-color: var(--square-shadow);
     }
 
-    &[data-move-type="capture"]::after {
+    &[data-move-type="capture"] {
       --square-shadow: var(--capture);
     }
 
-    &[data-move-type="promotion"]::after,
-    &[data-move-type="all"]::after {
+    &[data-move-type="promotion"],
+    &[data-move-type="all"] {
       --square-shadow: var(--promotion);
     }
 
@@ -146,6 +143,7 @@ main {
       position: absolute;
       inset: 0;
       z-index: 1;
+      border: 1.5px solid var(--capture);
       background-color: hsla(from var(--capture) h s l / 0.4);
     }
   }
@@ -225,6 +223,7 @@ main {
   h1 {
     font-size: 2em;
     font-weight: 600;
+    text-transform: capitalize;
   }
 }
 
