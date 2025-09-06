@@ -19,7 +19,7 @@ export class Game {
     this.board = gameBoard;
     this.status = null;
     this.activePlayer = "white";
-    this.kingPositions = { white: "40", black: "47" };
+    this.kingPositions = this.getKingPositions();
   }
 
   private switchPlayerTurn() {
@@ -280,5 +280,16 @@ export class Game {
       case "white":
         return posY === 7;
     }
+  }
+
+  private getKingPositions() {
+    const { black, white } = this.board;
+    const whiteKing = [...white.entries()].find((entry) => entry[1] === "king");
+    const blackKing = [...black.entries()].find((entry) => entry[1] === "king");
+    if (!whiteKing || !blackKing) {
+      throw new Error("King positions are undefined");
+    }
+
+    return { black: blackKing[0], white: whiteKing[0] };
   }
 }

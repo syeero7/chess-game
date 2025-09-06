@@ -240,16 +240,16 @@ function playComputerMove() {
   const game = controller.getGame();
   if (!game || !overHeader || !backdrop || !overScreen) return;
 
-  controller.computerMove(game);
-  const status = game.getGameStatus();
-  if (status === "checkmate" || status === "stalemate") {
-    overHeader.textContent = status;
-    backdrop.dataset.open = "true";
-    overScreen.dataset.open = "true";
-    return;
-  }
-
   setTimeout(() => {
+    controller.computerMove(game);
+    const status = game.getGameStatus();
+    if (status === "checkmate" || status === "stalemate") {
+      overHeader.textContent = status;
+      backdrop.dataset.open = "true";
+      overScreen.dataset.open = "true";
+      return;
+    }
+
     clearGameBoard();
     renderGameBoard();
   }, 500);
