@@ -5,8 +5,10 @@ import { PieceMove, GameBoard } from "../src/types";
 describe("pawn moves generation", () => {
   it("should generate available normal moves for pawn pieces", () => {
     const gameBoard: GameBoard = { black: new Map(), white: new Map() };
+    gameBoard.white.set("06", "king");
     gameBoard.white.set("01", "pawn");
     gameBoard.white.set("11", "pawn");
+    gameBoard.black.set("71", "king");
     gameBoard.black.set("26", "pawn");
     gameBoard.black.set("16", "pawn");
     const game = new Game(gameBoard);
@@ -22,8 +24,10 @@ describe("pawn moves generation", () => {
 
   it("should generate available capture moves for pawn pieces", () => {
     const gameBoard: GameBoard = { black: new Map(), white: new Map() };
+    gameBoard.white.set("60", "king");
     gameBoard.white.set("03", "pawn");
     gameBoard.white.set("23", "pawn");
+    gameBoard.black.set("17", "king");
     gameBoard.black.set("14", "pawn");
     gameBoard.black.set("34", "pawn");
     const game = new Game(gameBoard);
@@ -41,7 +45,9 @@ describe("pawn moves generation", () => {
 
   it("should generate available promotion moves for pawn pieces", () => {
     const gameBoard: GameBoard = { black: new Map(), white: new Map() };
+    gameBoard.white.set("60", "king");
     gameBoard.white.set("26", "pawn");
+    gameBoard.black.set("57", "king");
     gameBoard.black.set("01", "pawn");
     const game = new Game(gameBoard);
 
@@ -54,8 +60,10 @@ describe("pawn moves generation", () => {
 
   it('should generate available capture and promotion moves as "all" moves for pawn pieces', () => {
     const gameBoard: GameBoard = { black: new Map(), white: new Map() };
+    gameBoard.white.set("50", "king");
     gameBoard.white.set("60", "knight");
     gameBoard.white.set("26", "pawn");
+    gameBoard.black.set("57", "king");
     gameBoard.black.set("17", "knight");
     gameBoard.black.set("71", "pawn");
     const game = new Game(gameBoard);

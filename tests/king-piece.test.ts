@@ -7,6 +7,7 @@ describe("king moves generation", () => {
     const gameBoard: GameBoard = { black: new Map(), white: new Map() };
     gameBoard.white.set("32", "pawn");
     gameBoard.white.set("52", "pawn");
+    gameBoard.white.set("06", "king");
     gameBoard.black.set("33", "king");
     const game = new Game(gameBoard);
 
